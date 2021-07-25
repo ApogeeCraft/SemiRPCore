@@ -1,0 +1,58 @@
+name: LobbyCore
+version: @version@
+main: fr.apogeecraft.Core
+api-version: 1.17
+authors: [Zendraft]
+description: Lobby main plugin
+website: https://www.apogeecraft.fr/
+
+commands:
+  register:
+    description: Permet de créer son compte sql
+    aliases: register
+    permission: register.use
+    permission-message: Tu n'as pas la permission d'éxécuté cette commande!
+    usage: "Utilise: /register"
+
+  login:
+    description: Permet de se login a son compte sql
+    aliases: login
+    permission: login.use
+    permission-message: Tu n'as pas la permission d'éxécuté cette commande!
+    usage: "Utilise: /login"
+  skull:
+    description: Permet de se give des playerHeads
+    aliases: skull
+    permission: skull.use
+    permission-message: Tu n'as pas la permission d'éxécuté cette commande!
+    usage: "Utilise: /skull <playername>"
+  day:
+    description: Permet de mettre le jour
+    aliases: day
+    permission: day.use
+    permission-message: Tu n'as pas la permission d'éxécuté cette commande!
+    usage: "Utilise: /day"
+  gamemode:
+    description: Permet de se mettre en gm
+    aliases: gm
+    permission: gamemode.use
+    permission-message: Tu n'as pas la permission d'éxécuté cette commande!
+    usage: "Utilise: /gamemode"
+  money:
+    description: Permet de voir son argent
+    aliases: money
+    permission: money.use
+    permission-message: Tu n'as pas la permission d'éxécuté cette commande!
+    usage: "Utilise: /money"
+  chest:
+    description: Permet de modif un coffre
+    aliases: p.chest
+    permission: p.chest.use
+    permission-message: Tu n'as pas la permission d'éxécuté cette commande!
+    usage: "Utilise: /chest"
+  claim:
+    description: Permet de claim une zone
+    aliases: p.claim
+    permission: p.claim.use
+    permission-message: Tu n'as pas la permission d'éxécuté cette commande!
+    usage: "Utilise: /claim"
