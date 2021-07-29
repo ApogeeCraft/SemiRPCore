@@ -468,9 +468,13 @@ public class SqlConnection {
         }
     }
 
-    public void getMembersListOfClaim(Player p, Chunk chunk){
+    public boolean getMembersListOfClaim(Player p, Chunk chunk){
+        int id = 0;
+        for(String player : memberListOfClaim(getClaimName(chunk))){
+            if(!player.isEmpty()) id++;
+        }
+        if(id==0) return true;
 
-        String newString = "";
         p.sendMessage(plugin.chatColor("&e                                              "));
         p.sendMessage(plugin.chatColor("&e-----&f&l"+" Liste des membres "+"&e-----"));
         p.sendMessage(plugin.chatColor("&e                                              "));
@@ -479,6 +483,7 @@ public class SqlConnection {
         }
         p.sendMessage(plugin.chatColor("&e                                              "));
         p.sendMessage(plugin.chatColor("&e-------------------------------"));
+        return false;
     }
 
 

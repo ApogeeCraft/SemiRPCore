@@ -21,6 +21,7 @@ public class RegisterListeners {
         registerListener(new AuthentificationOnLeave(plugin));
         registerListener(new ProtectionListener(plugin));
         registerListener(new ClaimProtection(plugin));
+        registerListener(new ClaimProtection(plugin));
     }
 
     private void registerListener(Listener listener){

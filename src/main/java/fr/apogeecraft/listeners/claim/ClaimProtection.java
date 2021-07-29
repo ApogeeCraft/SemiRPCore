@@ -153,7 +153,12 @@ public class ClaimProtection implements Listener {
             plugin.getPlayerManager().addPlayerToIsKickingFromClaim(e.getWhoClicked().getName());
             e.getView().close();
             e.getWhoClicked().sendMessage("");
-            sql.getMembersListOfClaim((Player) e.getWhoClicked(),e.getWhoClicked().getLocation().getChunk());
+            if(sql.getMembersListOfClaim((Player) e.getWhoClicked(),e.getWhoClicked().getLocation().getChunk())){
+                e.getWhoClicked().sendMessage(plugin.chatColor("&cVous n'avez aucun membre dans votre claim!"));
+                plugin.getPlayerManager().removePlayerToIsKickingFromClaim(e.getWhoClicked().getName());
+                e.getView().close();
+                return;
+            }
             e.getWhoClicked().sendMessage(plugin.chatColor("&eEcrivez le nom de la personne a kick de votre claim !"));
             e.getWhoClicked().sendMessage(plugin.chatColor("&eEcrit &fexit &epour annulez !"));
             e.getView().close();
@@ -239,7 +244,6 @@ public class ClaimProtection implements Listener {
             e.setCancelled(true);
             return;
         }
-
 
         if(Objects.requireNonNull(Bukkit.getPlayer(e.getMessage())).isOnline()){
 

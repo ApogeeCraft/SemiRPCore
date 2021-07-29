@@ -4,7 +4,6 @@ import fr.apogeecraft.Core;
 import fr.apogeecraft.database.SqlConnection;
 import fr.apogeecraft.manager.authentification.AuthManager;
 import net.luckperms.api.LuckPerms;
-import net.luckperms.api.LuckPermsProvider;
 import net.luckperms.api.cacheddata.CachedDataManager;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -17,9 +16,6 @@ import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 
 import java.util.OptionalInt;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 public class ProtectionListener implements Listener {
     private Core plugin;
     private SqlConnection sql;
