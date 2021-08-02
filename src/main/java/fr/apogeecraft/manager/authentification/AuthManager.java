@@ -2,7 +2,6 @@ package fr.apogeecraft.manager.authentification;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.World;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
@@ -40,6 +39,7 @@ public class AuthManager {
     public void addPlayerToOldLocation(Player p){
         oldLocation.put(p,p.getLocation());
     }
+
     public Location getPlayerOldLocation(Player p){
         Location l = oldLocation.get(p);
         oldLocation.remove(l);

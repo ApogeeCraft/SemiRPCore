@@ -4,6 +4,7 @@ import fr.apogeecraft.Core;
 import fr.apogeecraft.listeners.auth.AuthentificationOnJoin;
 import fr.apogeecraft.listeners.auth.AuthentificationOnLeave;
 import fr.apogeecraft.listeners.auth.ProtectionListener;
+import fr.apogeecraft.listeners.chest.ChestProtection;
 import fr.apogeecraft.listeners.claim.ClaimProtection;
 import fr.apogeecraft.listeners.discord.ServerToDiscordListener;
 import org.bukkit.Bukkit;
@@ -24,6 +25,7 @@ public class RegisterListeners {
         registerListener(new ClaimProtection(plugin));
         registerListener(new ClaimProtection(plugin));
         registerListener(new ServerToDiscordListener(plugin));
+        registerListener(new ChestProtection(plugin));
     }
 
     private void registerListener(Listener listener){

@@ -45,6 +45,7 @@ public class login implements CommandExecutor {
             authManager.logPlayer(p);
             p.sendMessage(plugin.chatColor("&aVous êtes désormais connecté!"));
             p.removePotionEffect(PotionEffectType.BLINDNESS);
+            p.teleport(authManager.getPlayerOldLocation(p));
             return true;
         }else{
             p.sendMessage(plugin.chatColor("&cMauvais mot de passe."));
