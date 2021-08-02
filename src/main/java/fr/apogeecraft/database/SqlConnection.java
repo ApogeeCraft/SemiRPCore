@@ -132,8 +132,8 @@ public class SqlConnection {
 
     public void createChest(Player p, Location location){
         try {
-            PreparedStatement q = connection.prepareStatement("INSERT INTO `ProtectChest` (`OwnerUUID`, `X`,`Y`, `Z`) VALUES (?, ?, ?, ?);");
-            q.setString(1, p.getUniqueId().toString());
+            PreparedStatement q = connection.prepareStatement("INSERT INTO `ProtectChest` (`Owner`, `X`,`Y`, `Z`) VALUES (?, ?, ?, ?);");
+            q.setString(1, p.getName());
             q.setInt(2, location.getBlockX());
             q.setInt(3, location.getBlockY());
             q.setInt(4, location.getBlockZ());
@@ -150,11 +150,11 @@ public class SqlConnection {
             return;
         }
         try {
-            PreparedStatement q = connection.prepareStatement("UPDATE `ProtectChest` SET `memberList` = ? WHERE `OwnerUUID` = ? AND `X` = ? AND `Y` = ? AND `Z` = ?");
+            PreparedStatement q = connection.prepareStatement("UPDATE `ProtectChest` SET `memberList` = ? WHERE `Owner` = ? AND `X` = ? AND `Y` = ? AND `Z` = ?");
 
             List<String> memberList = memberListOfChest(location);
             if(memberList.contains(playerName)) {
-                p.sendMessage(plugin.chatColor("&cCette personne est déjà membre du coffre."));
+
                 return;
             }
             memberList.add(playerName);
@@ -163,10 +163,10 @@ public class SqlConnection {
             StringBuilder newMemberList = new StringBuilder();
 
             for(String member : memberList){ newMemberList.append(member).append(" "); }
-            p.sendMessage(plugin.chatColor("&aVous avez ajouté &f&l" + playerName + "&a a ce coffre."));
+
 
             q.setString(1, String.valueOf(newMemberList));
-            q.setString(2, p.getUniqueId().toString());
+            q.setString(2, p.getName());
             q.setInt(3, location.getBlockX());
             q.setInt(4, location.getBlockY());
             q.setInt(5, location.getBlockZ());
@@ -184,21 +184,20 @@ public class SqlConnection {
             return;
         }
         try {
-            PreparedStatement q = connection.prepareStatement("UPDATE `ProtectChest` SET `memberList` = ? WHERE `OwnerUUID` = ? AND `X` = ? AND `Y` = ? AND `Z` = ?");
+            PreparedStatement q = connection.prepareStatement("UPDATE `ProtectChest` SET `memberList` = ? WHERE `Owner` = ? AND `X` = ? AND `Y` = ? AND `Z` = ?");
 
             List<String> memberList = memberListOfChest(location);
             if(!memberList.contains(playerName)) {
-                p.sendMessage(plugin.chatColor("&cCette personne n'as pas accès a votre coffre."));
                 return;
             }
             memberList.remove(playerName);
             StringBuilder newMemberList = new StringBuilder();
 
             for(String member : memberList){ newMemberList.append(member).append(" "); }
-            p.sendMessage(plugin.chatColor("&aCette personne n'as maintenant plus accès a votre coffre."));
+
 
             q.setString(1, String.valueOf(newMemberList));
-            q.setString(2, p.getUniqueId().toString());
+            q.setString(2, p.getName());
             q.setInt(3, location.getBlockX());
             q.setInt(4, location.getBlockY());
             q.setInt(5, location.getBlockZ());
@@ -212,20 +211,20 @@ public class SqlConnection {
 
     public boolean playerIsOwnerOfChest(Player p, Location location){
         try {
-            PreparedStatement q = connection.prepareStatement("SELECT `X`,`Y`,`Z`, `OwnerUUID` FROM `ProtectChest` WHERE `X` = ? AND `Y` = ? AND `Z` = ?");
+            PreparedStatement q = connection.prepareStatement("SELECT `X`,`Y`,`Z`, `Owner` FROM `ProtectChest` WHERE `X` = ? AND `Y` = ? AND `Z` = ?");
 
             q.setInt(1, location.getBlockX());
             q.setInt(2, location.getBlockY());
             q.setInt(3, location.getBlockZ());
             ResultSet r = q.executeQuery();
 
-            String OwnerUUID = "";
-            while (r.next()) OwnerUUID = r.getString("OwnerUUID");
+            String Owner = "";
+            while (r.next()) Owner = r.getString("Owner");
 
             q.close();
             r.close();
-            System.out.println(OwnerUUID + " = " +p.getUniqueId() +" = " + OwnerUUID.equals(p.getUniqueId().toString()));
-            return OwnerUUID.equals(p.getUniqueId().toString());
+
+            return Owner.equals(p.getName());
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }
@@ -424,7 +423,48 @@ public class SqlConnection {
             return "";
         }
     }
+    public boolean chestIsPrivate(Location location){
+        try {
+            PreparedStatement q = connection.prepareStatement("SELECT `X`,`Y`,`Z`, `Owner` FROM `ProtectChest` WHERE `X` = ? AND `Y` = ? AND `Z` = ?");
 
+            q.setInt(1, location.getBlockX());
+            q.setInt(2, location.getBlockY());
+            q.setInt(3, location.getBlockZ());
+            ResultSet r = q.executeQuery();
+
+            String Owner = "";
+            while (r.next()) Owner = r.getString("Owner");
+
+            q.close();
+            r.close();
+
+            return !Owner.isEmpty();
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+        return false;
+    }
+    public String getOwnerOfChest(Location location){
+        try {
+            PreparedStatement q = connection.prepareStatement("SELECT `X`,`Y`,`Z`, `Owner` FROM `ProtectChest` WHERE `X` = ? AND `Y` = ? AND `Z` = ?");
+
+            q.setInt(1, location.getBlockX());
+            q.setInt(2, location.getBlockY());
+            q.setInt(3, location.getBlockZ());
+            ResultSet r = q.executeQuery();
+
+            String Owner = "";
+            while (r.next()) Owner = r.getString("Owner");
+
+            q.close();
+            r.close();
+
+            return Owner;
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+        return "";
+    }
     public boolean playerIsOwnerOfClaim(Player p, Chunk chunk){
 
         try {

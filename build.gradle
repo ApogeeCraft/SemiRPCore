@@ -2,17 +2,17 @@ import org.apache.tools.ant.filters.ReplaceTokens
 
 apply plugin: 'java'
 
-group = 'fr'
+group = 'fr.apogeecraft'
 version = '1.0-SNAPSHOT'
-compileJava.options.encoding = 'UTF-8'
+
 sourceCompatibility = '1.8'
 targetCompatibility = '1.8'
 
 repositories {
     mavenCentral()
     maven {
-        name = 'papermc-repo'
-        url = 'https://papermc.io/repo/repository/maven-public/'
+        name = 'spigotmc-repo'
+        url = 'https://hub.spigotmc.org/nexus/content/repositories/snapshots/'
     }
     maven {
         name = 'sonatype'
@@ -21,11 +21,17 @@ repositories {
 }
 
 dependencies {
-    compile fileTree (dir: 'libs', include: '*.jar')
+    compileOnly 'org.spigotmc:spigot-api:1.16.1-R0.1-SNAPSHOT'
+    implementation fileTree (dir: 'libs', include: '*.jar')
 }
 
 processResources {
     from(sourceSets.main.resources.srcDirs) {
         filter ReplaceTokens, tokens: [version: version]
     }
+    duplicatesStrategy = 'include'
+}
+
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
 }

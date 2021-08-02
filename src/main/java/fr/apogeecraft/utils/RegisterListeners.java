@@ -5,6 +5,7 @@ import fr.apogeecraft.listeners.auth.AuthentificationOnJoin;
 import fr.apogeecraft.listeners.auth.AuthentificationOnLeave;
 import fr.apogeecraft.listeners.auth.ProtectionListener;
 import fr.apogeecraft.listeners.claim.ClaimProtection;
+import fr.apogeecraft.listeners.discord.ServerToDiscordListener;
 import org.bukkit.Bukkit;
 import org.bukkit.event.Listener;
 
@@ -22,6 +23,7 @@ public class RegisterListeners {
         registerListener(new ProtectionListener(plugin));
         registerListener(new ClaimProtection(plugin));
         registerListener(new ClaimProtection(plugin));
+        registerListener(new ServerToDiscordListener(plugin));
     }
 
     private void registerListener(Listener listener){

@@ -5,6 +5,7 @@ api-version: 1.17
 authors: [Zendraft]
 description: Lobby main plugin
 website: https://www.apogeecraft.fr/
+depend: [JDA]
 
 commands:
   register:

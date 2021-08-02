@@ -2,98 +2,180 @@ package fr.apogeecraft.listeners.chest;
 
 import fr.apogeecraft.Core;
 import fr.apogeecraft.database.SqlConnection;
-import fr.apogeecraft.manager.authentification.AuthManager;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
-import org.bukkit.event.block.BlockBreakEvent;
-import org.bukkit.event.block.BlockPlaceEvent;
-import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.block.Chest;
+import org.bukkit.block.DoubleChest;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandExecutor;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.DoubleChestInventory;
 
-public class ChestProtection implements Listener {
-    private Core plugin;
-    private SqlConnection sql;
-
+public class ChestProtection implements CommandExecutor {
+    private final Core plugin;
+    private final SqlConnection sql;
 
     public ChestProtection(Core plugin){
         this.plugin = plugin;
-        this.sql = this.plugin.getSqlConnection();
+        this.sql = plugin.getSqlConnection();
     }
+    @Override
+    public boolean onCommand(CommandSender commandSender, Command command, String s, String[] args) {
+        if(!(commandSender instanceof Player)){
+            Bukkit.getConsoleSender().sendMessage(plugin.chatColor("&cVous devez être un joueur"));
+            return true;
+        }
+        Player p = (Player) commandSender;
+        Block b = p.getTargetBlock(null,5);
 
-    @EventHandler
-    public void onPlaceChest(BlockPlaceEvent e){
-        if(!(e.getBlockPlaced().getType().equals(Material.CHEST))) return;
-        Block b = e.getBlockPlaced();
-        int X = b.getX();
-        int Y = b.getY();
-        int Z = b.getZ();
+        if(!(b.getType().equals(Material.CHEST))) {
+            p.sendMessage(plugin.chatColor("&cVous devez regarder un coffre a moins de 5 blocs\npour pouvoir accéder a cette commande !"));
+            return true;
+        }
 
-        Location l = new Location(b.getWorld(), X+1, Y, Z);
-
-        if(e.getPlayer().getWorld().getBlockAt(l).getType().equals(Material.CHEST)){
-            if(sql.playerIsOwnerOfChest(e.getPlayer(),l)||sql.playerIsMemberOfChest(e.getPlayer().getName(),l));
+        if(args.length == 0){
+            if(sql.playerIsOwnerOfChest(p, b.getLocation())) {
+                p.sendMessage(
+                        plugin.chatColor(
+                                "&aVous êtes le propriétaire \n" +
+                                        "&aVous pouvez ajouter un membre en faisant &f&l/chest add <player>\n"
+                        )
+                );
+                sql.getMembersList(p,p.getTargetBlock(null,5).getLocation());
+                return true;
+            }
+            else if(!sql.chestIsPrivate(b.getLocation())){
+                p.sendMessage(plugin.chatColor("&aVous pouvez privatiser ce coffre en faisant /chest private"));
+                return true;
+            }
             else{
-                e.getPlayer().sendMessage(chatColor("#960000V#9b0000o#a10000u#a60000s #ac0000n#b10000'#b70000ê#bc0000t#c20000e#c70000s #cd0000p#d20000a#d80000s #dd0000a#e30000u#e80000t#ee0000o#f30000r#f90000i#ff0000s#f80000é #f20000à #eb0000p#e50000o#de0000s#d80000e#d10000r #cb0000u#c40000n #be0000c#b70000o#b10000f#aa0000f#a40000r#9d0000e #970000i#900000c#8a0000i #840000!"));
-                e.setCancelled(true);
-                return;
-            }
-        }
-        Location l2 = new Location(b.getWorld(), X-1, Y, Z);
-
-        if(e.getPlayer().getWorld().getBlockAt(l2).getType().equals(Material.CHEST)) {
-            if(sql.playerIsOwnerOfChest(e.getPlayer(),l2)||sql.playerIsMemberOfChest(e.getPlayer().getName(),l2));
-            else {
-                e.getPlayer().sendMessage(chatColor("#960000V#9b0000o#a10000u#a60000s #ac0000n#b10000'#b70000ê#bc0000t#c20000e#c70000s #cd0000p#d20000a#d80000s #dd0000a#e30000u#e80000t#ee0000o#f30000r#f90000i#ff0000s#f80000é #f20000à #eb0000p#e50000o#de0000s#d80000e#d10000r #cb0000u#c40000n #be0000c#b70000o#b10000f#aa0000f#a40000r#9d0000e #970000i#900000c#8a0000i #840000!"));
-                e.setCancelled(true);
-                return;
-            }
-        }
-        Location l3 = new Location(b.getWorld(), X, Y, Z+1);
-
-        if(e.getPlayer().getWorld().getBlockAt(l3).getType().equals(Material.CHEST)){
-            if(sql.playerIsOwnerOfChest(e.getPlayer(),l3)||sql.playerIsMemberOfChest(e.getPlayer().getName(),l3));
-            else {
-                e.getPlayer().sendMessage(chatColor("#960000V#9b0000o#a10000u#a60000s #ac0000n#b10000'#b70000ê#bc0000t#c20000e#c70000s #cd0000p#d20000a#d80000s #dd0000a#e30000u#e80000t#ee0000o#f30000r#f90000i#ff0000s#f80000é #f20000à #eb0000p#e50000o#de0000s#d80000e#d10000r #cb0000u#c40000n #be0000c#b70000o#b10000f#aa0000f#a40000r#9d0000e #970000i#900000c#8a0000i #840000!"));
-                e.setCancelled(true);
-                return;
+                p.sendMessage(plugin.chatColor("&cCe coffre appartient à "+sql.getOwnerOfChest(b.getLocation())));
+                return true;
             }
         }
 
-        Location l4 = new Location(b.getWorld(), X, Y, Z-1);
 
-        if(e.getPlayer().getWorld().getBlockAt(l4).getType().equals(Material.CHEST)) {
-            if(sql.playerIsOwnerOfChest(e.getPlayer(),l4)||sql.playerIsMemberOfChest(e.getPlayer().getName(),l4));
-            else {
-                e.getPlayer().sendMessage(chatColor("#960000V#9b0000o#a10000u#a60000s #ac0000n#b10000'#b70000ê#bc0000t#c20000e#c70000s #cd0000p#d20000a#d80000s #dd0000a#e30000u#e80000t#ee0000o#f30000r#f90000i#ff0000s#f80000é #f20000à #eb0000p#e50000o#de0000s#d80000e#d10000r #cb0000u#c40000n #be0000c#b70000o#b10000f#aa0000f#a40000r#9d0000e #970000i#900000c#8a0000i #840000!"));
-                e.setCancelled(true);
-                return;
+        if(args.length == 1){
+            if(args[0].equalsIgnoreCase("private")){
+                if(sql.playerIsOwnerOfChest(p,b.getLocation())){
+                    p.sendMessage(plugin.chatColor("&cVous êtes deja le propriétaire"));
+                    return true;
+                }
+                if(sql.chestIsPrivate(b.getLocation())){
+                    p.sendMessage(plugin.chatColor("&cCe coffre appartient à "+sql.getOwnerOfChest(b.getLocation())));
+                    return true;
+                }
+                else{
+
+                    if(b.getType().equals(Material.CHEST)){
+                        Chest chest = (Chest) b.getState();
+                        checkAndAddPrivateChest(p, chest);
+                    }else{
+                        sql.createChest(p,b.getLocation());
+                        p.sendMessage(plugin.chatColor("&aVous avez privatisé ce coffre !"));
+                    }
+
+                    return true;
+                }
+
+            }
+            if(args[0].equalsIgnoreCase("unprivate")){
+                if(sql.playerIsOwnerOfChest(p,b.getLocation())){
+                    sql.removeChest(b.getLocation());
+                    p.sendMessage(plugin.chatColor("&aVous avez unprivate ce coffre"));
+                    return true;
+                }
+                else if(sql.chestIsPrivate(b.getLocation())){
+                    p.sendMessage(plugin.chatColor("&cCe coffre appartient à "+sql.getOwnerOfChest(b.getLocation())));
+                    return true;
+                }
+                else{
+                    p.sendMessage(plugin.chatColor("&cCe coffre appartient à personne"));
+                    return true;
+                }
             }
         }
 
-        sql.createChest(e.getPlayer(), e.getBlockPlaced().getLocation());
-        e.getPlayer().sendMessage(plugin.chatColor("&aVous êtes desormais Propriétaire d'un coffre"));
+
+        if(args.length == 2){
+            if(sql.playerIsOwnerOfChest(p, b.getLocation())) {
+                if (args[0].equals("add")) {
+                    if(sql.playerIsMemberOfChest(args[1], b.getLocation())){
+                        p.sendMessage(plugin.chatColor("&cCe joueur appartient deja aux membres de ce coffre"));
+                        return true;
+                    }
+                    if (Bukkit.getOfflinePlayer(args[1]).hasPlayedBefore()) {
+
+                        if(b.getType().equals(Material.CHEST)){
+                            Chest chest = (Chest) b.getState();
+                            checkAndAddMemberToPrivateChest(p,args[1], chest);
+                        }else{
+                            sql.addMemberToChest(p, args[1], p.getTargetBlock(null, 5).getLocation());
+                            p.sendMessage(plugin.chatColor("&aVous avez ajouté "+args[1]+" à ce coffre !"));
+                        }
+                        return true;
+
+                    } else{
+                        p.sendMessage(plugin.chatColor("&cLe joueur &f&l" + args[1] + " &cn'a jamais jouer sur le serveur."));
+                        return true;
+                    }
+                }
+                if (args[0].equals("remove")) {
+                    if(sql.playerIsMemberOfChest(args[1], b.getLocation())){
+                        if(b.getType().equals(Material.CHEST)){
+                            Chest chest = (Chest) b.getState();
+                            checkAndRemoveMemberToPrivateChest(p,args[1], chest);
+                        }else{
+                            sql.addMemberToChest(p, args[1], p.getTargetBlock(null, 5).getLocation());
+                            p.sendMessage(plugin.chatColor("&aCette personne n'as maintenant plus accès a votre coffre."));
+                        }
+                        return true;
+                    }else {
+                        p.sendMessage(plugin.chatColor("&cLe joueur &f&l" + args[1] + " &cn'est pas dans la list des membres pouvant acceder au coffre."));
+                    }
+                }
+            }
+        }
+
+        return true;
     }
 
-    @EventHandler
-    public void onBreakChest(BlockBreakEvent e){
-        if(!(e.getBlock().getType().equals(Material.CHEST))) return;
 
-        if(!(sql.playerIsOwnerOfChest(e.getPlayer(),e.getBlock().getLocation()))){
-            e.setCancelled(true);
-            return;
+    private void checkAndAddPrivateChest(Player p, Chest chest){
+        if(chest.getInventory() instanceof DoubleChestInventory){
+            DoubleChest doubleChest = ((DoubleChestInventory) chest.getInventory()).getHolder();
+            Chest leftChest = (Chest) doubleChest.getLeftSide();
+            Chest rightChest = (Chest) doubleChest.getRightSide();
+            sql.createChest(p,leftChest.getLocation());
+            sql.createChest(p,rightChest.getLocation());
+            p.sendMessage(plugin.chatColor("&aVous avez privatisé votre double coffres"));
         }
-        sql.removeChest(e.getBlock().getLocation());
     }
 
-    @EventHandler
-    public void onClickChest(PlayerInteractEvent e){
-        if(e.getClickedBlock()== null) return;
-        if(!(e.getClickedBlock().getType().equals(Material.CHEST))) return;
-        if( sql.playerIsMemberOfChest(e.getPlayer().getName(), e.getClickedBlock().getLocation()) ||sql.playerIsOwnerOfChest(e.getPlayer(), e.getClickedBlock().getLocation()))return;
-        e.getPlayer().sendMessage(chatColor("#960000V#9b0000o#a10000u#a70000s #ad0000n#b30000'#b90000ê#be0000t#c40000e#ca0000s #d00000p#d60000a#dc0000s #e10000a#e70000u#ed0000t#f30000o#f90000r#ff0000i#f80000s#f10000é #ea0000à #e30000o#dc0000u#d60000v#cf0000r#c80000i#c10000r #ba0000c#b30000e #ad0000c#a60000o#9f0000f#980000f#910000r#8a0000e #840000!"));
-        e.setCancelled(true);
+    private void checkAndAddMemberToPrivateChest(Player p,String target, Chest chest){
+        if(chest.getInventory() instanceof DoubleChestInventory){
+            DoubleChest doubleChest = ((DoubleChestInventory) chest.getInventory()).getHolder();
+            Chest leftChest = (Chest) doubleChest.getLeftSide();
+            Chest rightChest = (Chest) doubleChest.getRightSide();
+
+            sql.addMemberToChest(p,target,leftChest.getLocation());
+            sql.addMemberToChest(p,target,rightChest.getLocation());
+            p.sendMessage(plugin.chatColor("&aVous avez ajouté "+target+" a votre double coffres!"));
+        }
     }
-    private String chatColor(String text){ return plugin.chatColor(text); }
+    private void checkAndRemoveMemberToPrivateChest(Player p,String target, Chest chest){
+        if(chest.getInventory() instanceof DoubleChestInventory){
+            DoubleChest doubleChest = ((DoubleChestInventory) chest.getInventory()).getHolder();
+            Chest leftChest = (Chest) doubleChest.getLeftSide();
+            Chest rightChest = (Chest) doubleChest.getRightSide();
+
+            sql.removeMemberOfChest(p,target,leftChest.getLocation());
+            sql.removeMemberOfChest(p,target,rightChest.getLocation());
+            p.sendMessage(plugin.chatColor("&aCette personne n'as maintenant plus accès a votre double coffre."));
+        }
+    }
+
 }
